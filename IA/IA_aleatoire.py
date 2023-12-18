@@ -40,33 +40,32 @@ class IA_ESNW:
         # Access the missions' positions from the game_dict
         missions_positions = {tuple(m['position']): m for m in game_dict['missions']}
 
-        for mission_position, mission in missions_positions.items():
+        for mission_position, mission in missions_positions.items(): # Vérifie constemment la mission la plus proche du joueur
             if mission_position != current_position:
                 position_x = current_position[0]
                 position_y = current_position[1]
-                position_x_vise = 0
-                position_y_vise = 0
+                position_x_vise = 0 # Variable x de la mission la plus proche
+                position_y_vise = 0 # Variable y de la mission la plus proche
 
-                for x, y in [mission_position]:
+                for x, y in [mission_position]: # Calcule la différence de proximité entre la position visée et la meilleure position..
                     differencex = abs(x - current_position[0])
                     differencey = abs(y - current_position[1])
 
                     differencex1 = abs(x - position_x_vise)
                     differencey1 = abs(y - position_y_vise)
 
-                    # Check if the current mission is closer
+                    # Verifie si la mission vérifiée est plus proche ou pas de la current mission visée
                     if differencex + differencey < differencex1 + differencey1:
                         position_x_vise = x
                         position_y_vise = y
 
-        # Rest of your code
-        # Return a random action for now (replace this with your logic)
-        if current_position[0] != position_x_vise:
+        
+        if current_position[0] != position_x_vise: # Vérifie si la coordonée x du joueur est en accords avec la coordonnée x de la mission
             if current_position[0] > position_x_vise:
                 return 'E'
             else:
                 return 'W'
-        if current_position[1] != position_y_vise:
+        if current_position[1] != position_y_vise: # Vérifie si la coordonée y du joueur est en accords avec la coordonnée y de la mission
             if current_position[1] > position_y_vise:
                 return 'N'
             else:
@@ -81,4 +80,5 @@ class IA_ESNW:
             descr (str): descriptif du dernier tour de jeu
         """
         pass
+
 
