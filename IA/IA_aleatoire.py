@@ -28,23 +28,51 @@ class IA_ESNW:
 
         Returns:
             str : une action 'N', 'S', 'E', 'W', 'L', 'E', 'P'
+
         """
+
+        coders = game_dict['coders']
+        current_player_number = 0  # Replace with the actual player number of your AI
+
+        # Access the AI's current position
+        current_position = coders[current_player_number]['position']
 
         # Access the missions' positions from the game_dict
         missions_positions = {tuple(m['position']): m for m in game_dict['missions']}
 
-
-        # Now you can use missions_positions to get information about missions
         for mission_position, mission in missions_positions.items():
-            print(mission_position)
-            pass
+            if mission_position != current_position:
+                position_x = current_position[0]
+                position_y = current_position[1]
+                position_x_vise = 0
+                position_y_vise = 0
 
+                for x, y in [mission_position]:
+                    differencex = abs(x - current_position[0])
+                    differencey = abs(y - current_position[1])
+
+                    differencex1 = abs(x - position_x_vise)
+                    differencey1 = abs(y - position_y_vise)
+
+                    # Check if the current mission is closer
+                    if differencex + differencey < differencex1 + differencey1:
+                        position_x_vise = x
+                        position_y_vise = y
+
+        # Rest of your code
         # Return a random action for now (replace this with your logic)
-        return ['N', 'S', 'E', 'W'][random.randint(0, 3)]
-
-
-
-
+        if current_position[0] != position_x_vise:
+            if current_position[0] > position_x_vise:
+                return 'E'
+            else:
+                return 'W'
+        if current_position[1] != position_y_vise:
+            if current_position[1] > position_y_vise:
+                return 'N'
+            else:
+                return 'S'
+        if current_position == (position_x_vise, position_y_vise):
+            return 'P'
 
     def game_over(self, game_dict: dict) -> None:
         """Appelé à la fin du jeu ; sert à ce que vous voulez
@@ -53,3 +81,4 @@ class IA_ESNW:
             descr (str): descriptif du dernier tour de jeu
         """
         pass
+
