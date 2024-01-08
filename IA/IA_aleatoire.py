@@ -1,38 +1,27 @@
-##############################################################################
-# votre IA : à vous de coder
-# Rappel : ne pas changer les paramètres des méthodes
-# vous pouvez ajouter librement méthodes, fonctions, champs, ...
-##############################################################################
-
 import random
 from moteur_esn_wars import *
 
 class IA_ESNW:
-    def __init__(self, num_joueur : int, game_dic : dict) -> None:
-        """génère l'objet de la classe IA_ESNW
+    def __init__(self, num_joueur: int, game_dict: dict) -> None:
+        """Initialize the AI object.
 
         Args:
-            desc (str): descriptif de l'état initial de la partie
-            num_joueur (int): numéro de joueur attribué à l'IA
+            num_joueur (int): Player number assigned to the AI.
+            game_dict (dict): Initial state of the game.
         """
-
-        print("IA num", num_joueur,"chargée : OK")
-        pass
-
+        print("IA num", num_joueur, "loaded: OK")
 
     def action(self, game_dict: dict) -> str:
-        """Appelé à chaque décision du joueur IA
+        """Called for each decision of the AI player.
 
         Args:
-            game_dict (dict): descriptif de l'état de la partie
+            game_dict (dict): Description of the game state.
 
-            str : une action 'N', 'S', '
-        Returns:E', 'W', 'L', 'E', 'P'
-
+        Returns:
+            str: An action 'N', 'S', 'E', 'W', 'L', or 'P'.
         """
 
         coders = game_dict['coders']
-
         current_player_number = 0  # Replace with the actual player number of your AI
 
         # Access the AI's current position
@@ -43,61 +32,77 @@ class IA_ESNW:
         # Access the missions' positions from the game_dict
         missions_positions = {tuple(m['position']): m for m in game_dict['missions']}
 
-        if current_energy == 0:
-            position_x_vise = 10
+        if current_energy == 0: # Si l'energie est à 0
+            position_x_vise = 10 # On vise le game center
             position_y_vise = 10
-            if current_position[0] != position_x_vise:
-                if current_position[0] > position_x_vise:
-                    return 'E'
-                else:
-                    return 'W'
+            
+            if current_position[0] != position_x_vise: # On se deplace vers le game center
+                
+                return 'E' if current_position[0] > position_x_vise else 'W'
+            
             if current_position[1] != position_y_vise:
-                if current_position[1] > position_y_vise:
-                    return 'N'
-                else:
-                    return 'S'
+                
+                return 'N' if current_position[1] > position_y_vise else 'S'
+            
             if current_money > 100:
+                
                 return 'L'
-            return 'R'
+            
+            return 'P'
 
-
+        # If energy is not 0, et qu'on peut donc travailler
         if current_energy > 0:
 
-            position_x_vise = float('inf')  # Initialize with positive infinity to ensure any mission position is closer
+            position_x_vise = float('inf') # On initialise une valeur visée infinie positive pour inclure toute mission possible
             position_y_vise = float('inf')
 
             for mission_position, mission in missions_positions.items():
-
-                if mission_position != current_position:
-
-                    x, y = mission_position
-
+                
+                if mission_position != current_position: # SI on est pas sure une mission :
+                    
+                    x, y = mission_position 
+                    
                     differencex = abs(x - current_position[0])
                     differencey = abs(y - current_position[1])
 
-                    # Check if the current mission is closer than the previously targeted mission
-                    if differencex + differencey < abs(position_x_vise - current_position[0]) + abs(position_y_vise - current_position[1]):
+                    if mission['workload'] < current_energy: # Et que une mission possède un workload inferieur à l'energie :
+                        
                         position_x_vise = x
                         position_y_vise = y
 
+                        if current_position[0] != position_x_vise: # On bouge vers cette mission
+                            return 'E' if current_position[0] > position_x_vise else 'W'
+                        if current_position[1] != position_y_vise:
+                            return 'N' if current_position[1] > position_y_vise else 'S'
 
-            if current_position[0] != position_x_vise: # Vérifie si la coordonée x du joueur est en accords avec la coordonnée x de la mission
+            for mission_position, mission in missions_positions.items(): # Sinon..
+                
+                if mission_position != current_position:
+                    
+                    x, y = mission_position
+                    
+                    differencex = abs(x - current_position[0]) # Verifie la différence entre la position du joueur et la position visée de la mission
+                    differencey = abs(y - current_position[1])
 
-                if current_position[0] > position_x_vise:
-                    return 'E'
-                else:
-                    return 'W'
-            if current_position[1] != position_y_vise: # Vérifie si la coordonée y du joueur est en accords avec la coordonnée y de la mission
-                if current_position[1] > position_y_vise:
-                    return 'N'
-                else:
-                    return 'S'
+                    if differencex + differencey < abs(position_x_vise - current_position[0]) + abs(position_y_vise - current_position[1]): #jsp ce que ça fait
+                        
+                        position_x_vise = x
+                        position_y_vise = y
 
+            if current_position[0] != position_x_vise: # On bouge alors vers cette mission.
+                
+                return 'E' if current_position[0] > position_x_vise else 'W'
+            
+            if current_position[1] != position_y_vise:
+                
+                return 'N' if current_position[1] > position_y_vise else 'S'
+
+        return 'P'
 
     def game_over(self, game_dict: dict) -> None:
-        """Appelé à la fin du jeu ; sert à ce que vous voulez
+        """Called at the end of the game; can be used for any specific actions.
 
         Args:
-            descr (str): descriptif du dernier tour de jeu
+            game_dict (dict): Description of the last game turn.
         """
         pass
