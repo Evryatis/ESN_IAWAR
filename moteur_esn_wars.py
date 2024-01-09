@@ -6,7 +6,7 @@ import json
 RAPPORT = True
 
 #variables globales constantes
-DIRECTIONS = {'N':(0,-1), 'S':(0,1), 'E':(-1,0), 'W':(1,0)}
+DIRECTIONS = {'N':(0,-1), 'S':(0,1), 'E':(1,0), 'W':(-1,0)}
 JC = (10,10)
 SIZE = 21
 MAX_LEVEL = 10
@@ -109,7 +109,7 @@ def update_cooldowns(missions : list):
 
 
 def resolve_action(num_player : int, action : str, game : Game):
-    """Résout l'action du joueur. Renvoie True si l'action est réalisable et False sinon.
+    """Résout l'action du joueur. Renvoie l'action si l'action est réalisable et 'P' sinon
 
     Args:
         num_player (int): numéro du joueur
@@ -127,7 +127,7 @@ def resolve_action(num_player : int, action : str, game : Game):
             coder.position = (x+dx,y+dy)
             if RAPPORT:
                 print("Coder", num_player, "se déplace en",x+dx,y+dy)      
-            return True
+            return action
 
     if action == 'L' and coder.level < MAX_LEVEL and coder.position==JC:
         coût = (coder.level+1)**2 * COST_UPGRADE
@@ -137,9 +137,9 @@ def resolve_action(num_player : int, action : str, game : Game):
             if RAPPORT:
                 print("Coder", num_player, "augmente son level à",coder.level)
                 input()   
-            return True
+            return 'L'
 
-    if action == 'E' and coder.max_energy < MAX_LEVEL and coder.position==JC:
+    if action == 'EM' and coder.max_energy < MAX_LEVEL and coder.position==JC:
         coût = (coder.max_energy+1)**2 * COST_UPGRADE
         if coder.bitcoins >= coût:
             coder.bitcoins -= coût
@@ -147,9 +147,10 @@ def resolve_action(num_player : int, action : str, game : Game):
             if RAPPORT:
                 print("Coder", num_player, "augmente son énergie max à",coder.max_energy)
                 input()  
-            return True
-        
-    return False
+            return 'EM'
+
+
+    return 'P'
     
 
 
@@ -261,8 +262,8 @@ def partie(player_names : list, missions_file : str):
         action = get_player_action(num_current_player, IAs, game)
         if RAPPORT:
             print("Action choisie", action)
-        game.actions.append(action)
-        resolve_action(num_current_player, action, game)
+        resultat = resolve_action(num_current_player, action, game)
+        game.actions.append(resultat)
         end_turn(num_current_player, game)
         x,y = game.coders[num_current_player].position
         
